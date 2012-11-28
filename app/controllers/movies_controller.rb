@@ -8,8 +8,12 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.order(sort_column + " " + sort_direction)
     @all_ratings = Movie.all_ratings
+    @selected_ratings = params[:ratings]
+    @selected_ratings ||= Hash[@all_ratings.map {|r| [r,1]}]
+
+    @movies = 
+    Movie.order(sort_column + " " + sort_direction).filter(@selected_ratings)
   end
 
   def new
