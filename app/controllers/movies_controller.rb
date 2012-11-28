@@ -1,5 +1,5 @@
 class MoviesController < ApplicationController
-  helper_method :sort_column, :sort_direction
+  helper_method :sort_column, :sort_direction, :checked_ratings
 
   def show
     id = params[:id] # retrieve movie ID from URI route
@@ -11,9 +11,8 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.all_ratings
     @selected_ratings = params[:ratings]
     @selected_ratings ||= Hash[@all_ratings.map {|r| [r,1]}]
-
     @movies = 
-    Movie.order(sort_column + " " + sort_direction).filter(@selected_ratings)
+    Movie.order(sort_column + " " + sort_direction).filter(checked_ratings)
   end
 
   def new
@@ -54,4 +53,10 @@ class MoviesController < ApplicationController
     %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
   end
 
+  def checked_ratings
+    ratings = Array.new
+    @selected_ratings.each do |rating|
+      if Movie.all_ratings.include?(rating) then ratings << rating end
+    end
+  end
 end

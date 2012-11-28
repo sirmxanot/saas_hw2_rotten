@@ -6,10 +6,10 @@
 %table#movies
   %thead
     %tr
-      %th= sortable "title", 'Movie Title'
-      %th= sortable "rating", 'Rating'
-      %th= sortable "release_date", 'Release Date'
-      %th= sortable "title", 'More Info'
+      %th= sortable "title", 'Movie Title', @selected_ratings
+      %th= sortable "rating", 'Rating', @selected_ratings
+      %th= sortable "release_date", 'Release Date', @selected_ratings
+      %th= sortable "title", 'More Info', @selected_ratings
   %tbody
     - @movies.each do |movie|
       %tr

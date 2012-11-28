@@ -1,5 +1,5 @@
 module ApplicationHelper
-  def sortable(column, title=nil)
+  def sortable(column, title=nil, selected_ratings)
     title ||= column.titleize
         
     if column == sort_column && sort_direction == "asc"
@@ -12,8 +12,8 @@ module ApplicationHelper
     else css_class = nil
     end
 
-    link_to title, {:sort => column, :direction => direction}, 
-    {:class => css_class}
+    link_to title, {:sort => column, :direction => direction, 
+      :ratings => @selected_ratings}, {:class => css_class}
   end   
 
   def checked?(rating)
