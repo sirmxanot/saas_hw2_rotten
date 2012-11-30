@@ -8,11 +8,25 @@ class MoviesController < ApplicationController
   end
 
   def index
+    sort = params[:sort] || session[:sort]
+
     @all_ratings = Movie.all_ratings
-    @selected_ratings = params[:ratings]
-    @selected_ratings ||= Hash[@all_ratings.map {|r| [r,1]}]
+    
+    @selected_ratings = params[:ratings] || session[:ratings]
+    @selected_ratings ||= Hash[@all_ratings.map {|r| [r,r]}]
+   
+    if params[:sort] != session[:sort] || params[:ratings] != session[:ratings]
+      session[:sort] = sort
+      session[:ratings] = @selected_ratings
+      redirect_to :sort => sort, :ratings => @selected_ratings
+    else
+      @movies = 
+      Movie.order(sort_column + " " + sort_direction).filter(checked_ratings)
+    end
+
     @movies = 
     Movie.order(sort_column + " " + sort_direction).filter(checked_ratings)
+
   end
 
   def new
@@ -47,16 +61,29 @@ class MoviesController < ApplicationController
 
   def sort_column
     Movie.column_names.include?(params[:sort]) ? params[:sort] : "title"
+    #if Movie.column_names.include?(params[:sort])
+    #  session[:sort] = params[:sort]
+    #else
+    #  session[:sort]= "title"
+    #end
   end
 
   def sort_direction
     %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+    #if %w[asc desc].include?(params[:direction])
+      #session[:direction] = params[:direction]
+    #else
+     # session[:direction] = "asc"
+   # end
   end
 
   def checked_ratings
     ratings = Array.new
     @selected_ratings.each do |rating|
-      if Movie.all_ratings.include?(rating) then ratings << rating end
+      if Movie.all_ratings.include?(rating)
+        ratings << rating 
+        #session[:ratings] = ratings
+      end
     end
   end
 end
