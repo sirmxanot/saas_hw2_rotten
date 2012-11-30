@@ -17,6 +17,6 @@ module ApplicationHelper
   end   
 
   def checked?(rating)
-    @selected_ratings.include?(rating) ? true : nil
+    checked_ratings.has_key?(rating) ? true : nil
   end
 end

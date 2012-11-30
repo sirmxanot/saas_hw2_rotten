@@ -8,25 +8,10 @@ class MoviesController < ApplicationController
   end
 
   def index
-    sort = params[:sort] || session[:sort]
-
-    @all_ratings = Movie.all_ratings
-    
-    @selected_ratings = params[:ratings] || session[:ratings]
-    @selected_ratings ||= Hash[@all_ratings.map {|r| [r,r]}]
-   
-    if params[:sort] != session[:sort] || params[:ratings] != session[:ratings]
-      session[:sort] = sort
-      session[:ratings] = @selected_ratings
-      redirect_to :sort => sort, :ratings => @selected_ratings
-    else
-      @movies = 
-      Movie.order(sort_column + " " + sort_direction).filter(checked_ratings)
-    end
+    @all_ratings =  Hash[Movie.all_ratings.map {|r| [r,r]}]
 
     @movies = 
     Movie.order(sort_column + " " + sort_direction).filter(checked_ratings)
-
   end
 
   def new
@@ -60,30 +45,45 @@ class MoviesController < ApplicationController
   private
 
   def sort_column
-    Movie.column_names.include?(params[:sort]) ? params[:sort] : "title"
-    #if Movie.column_names.include?(params[:sort])
-    #  session[:sort] = params[:sort]
-    #else
-    #  session[:sort]= "title"
-    #end
+    session[:sort] ||= "title"
+
+    if params.has_key?(:sort)
+      if Movie.column_names.include?(params[:sort])
+        session[:sort] = params[:sort]
+      else
+        session[:sort]
+      end
+    else
+      session[:sort]
+    end
   end
 
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
-    #if %w[asc desc].include?(params[:direction])
-      #session[:direction] = params[:direction]
-    #else
-     # session[:direction] = "asc"
-   # end
+    session[:direction] ||= "asc"
+
+    if params.has_key?(:direction)
+      if %w[asc desc].include?(params[:direction])
+        session[:direction] = params[:direction]
+      else
+        session[:direction]
+      end
+    else
+      session[:direction]
+    end
   end
 
   def checked_ratings
-    ratings = Array.new
-    @selected_ratings.each do |rating|
-      if Movie.all_ratings.include?(rating)
-        ratings << rating 
-        #session[:ratings] = ratings
+    session[:ratings] ||= @all_ratings
+
+    if params[:ratings] == nil
+      session[:ratings]
+    elsif session[:ratings] == params[:ratings] 
+      session[:ratings]
+    else
+      params[:ratings].each_value do |rating|
+        rating = nil unless @all_ratings.has_value?(rating)
       end
+      session[:ratings] = params[:ratings] 
     end
   end
 end

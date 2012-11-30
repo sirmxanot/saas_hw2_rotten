@@ -2,7 +2,7 @@
   = hidden_field_tag :sort, params[:sort]
   = hidden_field_tag :direction, params[:direction]        
   Include: 
-  - @all_ratings.each do |rating|
+  - @all_ratings.each_key do |rating|
     = rating
     = check_box_tag "ratings[#{rating}]", rating, checked?(rating)
   = submit_tag 'Refresh'
