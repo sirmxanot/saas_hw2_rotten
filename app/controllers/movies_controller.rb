@@ -8,7 +8,7 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @all_ratings =  Hash[Movie.all_ratings.map {|r| [r,r]}]
+    @all_ratings = Hash[Movie.all_ratings.map {|r| [r,r]}]
 
     @movies = 
     Movie.order(sort_column + " " + sort_direction).filter(checked_ratings)
